@@ -13,7 +13,7 @@ A Docker image to run an OpenVPN server. Based on Alpine Linux with OpenVPN and 
 - Persistent data via a Docker volume
 - Multi-arch: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
 
-**Also available:** Docker images for [WireGuard](https://github.com/hwdsl2/docker-wireguard), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server), and [Headscale](https://github.com/hwdsl2/docker-headscale).
+**Also available:** Docker images for [LiteLLM](https://github.com/hwdsl2/docker-litellm), [WireGuard](https://github.com/hwdsl2/docker-wireguard), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server) and [Headscale](https://github.com/hwdsl2/docker-headscale).
 
 ## Quick start
 
@@ -142,7 +142,8 @@ All server and client data is stored in the Docker volume (`/etc/openvpn` inside
 ├── server/
 │   ├── server.conf         # OpenVPN server configuration
 │   ├── ca.crt              # CA certificate
-│   ├── server.crt/key      # Server certificate and key
+│   ├── server.crt          # Server certificate
+│   ├── server.key          # Server private key
 │   ├── tc.key              # TLS crypt key
 │   ├── dh.pem              # DH parameters
 │   ├── crl.pem             # Certificate revocation list
@@ -182,6 +183,32 @@ cp vpn.env.example vpn.env
 # Edit vpn.env if needed, then:
 docker compose up -d
 docker cp openvpn:/etc/openvpn/clients/client.ovpn .
+```
+
+Example `docker-compose.yml` (already included):
+
+```yaml
+services:
+  openvpn:
+    image: hwdsl2/openvpn-server
+    container_name: openvpn
+    env_file:
+      - ./vpn.env
+    restart: always
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - openvpn-data:/etc/openvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+
+volumes:
+  openvpn-data:
 ```
 
 ## Update Docker image

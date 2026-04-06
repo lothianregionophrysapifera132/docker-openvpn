@@ -13,7 +13,7 @@
 - 使用 Docker 卷实现数据持久化
 - 多架构支持：`linux/amd64`、`linux/arm64`、`linux/arm/v7`
 
-**另提供：** [WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-zh.md)、[IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md) 和 [Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-zh.md) 的 Docker 镜像。
+**另提供：** [LiteLLM](https://github.com/hwdsl2/docker-litellm/blob/main/README-zh.md)、[WireGuard](https://github.com/hwdsl2/docker-wireguard/blob/main/README-zh.md)、[IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server/blob/master/README-zh.md) 和 [Headscale](https://github.com/hwdsl2/docker-headscale/blob/main/README-zh.md) 的 Docker 镜像。
 
 ## 快速开始
 
@@ -142,7 +142,8 @@ docker exec openvpn ovpn_manage --revokeclient alice -y
 ├── server/
 │   ├── server.conf         # OpenVPN 服务器配置
 │   ├── ca.crt              # CA 证书
-│   ├── server.crt/key      # 服务器证书和密钥
+│   ├── server.crt          # 服务器证书
+│   ├── server.key          # 服务器私钥
 │   ├── tc.key              # TLS 加密密钥
 │   ├── dh.pem              # DH 参数
 │   ├── crl.pem             # 证书吊销列表
@@ -182,6 +183,32 @@ cp vpn.env.example vpn.env
 # 如需修改，请编辑 vpn.env，然后：
 docker compose up -d
 docker cp openvpn:/etc/openvpn/clients/client.ovpn .
+```
+
+示例 `docker-compose.yml`（已包含在内）：
+
+```yaml
+services:
+  openvpn:
+    image: hwdsl2/openvpn-server
+    container_name: openvpn
+    env_file:
+      - ./vpn.env
+    restart: always
+    ports:
+      - "1194:1194/udp"
+    volumes:
+      - openvpn-data:/etc/openvpn
+    cap_add:
+      - NET_ADMIN
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    sysctls:
+      - net.ipv4.ip_forward=1
+      - net.ipv6.conf.all.forwarding=1
+
+volumes:
+  openvpn-data:
 ```
 
 ## 更新 Docker 镜像
