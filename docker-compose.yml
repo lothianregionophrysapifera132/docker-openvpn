@@ -2,13 +2,12 @@ services:
   openvpn:
     image: hwdsl2/openvpn-server
     container_name: openvpn
-    env_file:
-      - ./vpn.env
     restart: always
     ports:
       - "1194:1194/udp"
     volumes:
       - openvpn-data:/etc/openvpn
+      - ./vpn.env:/vpn.env:ro
     cap_add:
       - NET_ADMIN
     devices:
